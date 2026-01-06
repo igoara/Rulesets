@@ -1,0 +1,28 @@
+#!name=一汽大众去广告自用版
+#!desc=针对一汽大众 App 的开屏广告、首页 Banner、浮窗及冗余信息流进行精准屏蔽。
+#!author=Custom
+#!icon=https://raw.githubusercontent.com/luestr/IconHub/master/App/FawVw.png
+#!date=2026-01-07
+
+[MITM]
+hostname = oneapp-api.faw-vw.com
+
+[Script]
+# 1. 核心：屏蔽开屏广告 (支持燃油ICE和电动MEB版本)
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_(OPEN_SCREEN_ADS|CAR_ZHIHU_COLLEGE) jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=屏蔽开屏广告
+
+# 2. 屏蔽首页浮窗 (Buoy)
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_HOME_BUOY jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=屏蔽首页浮窗
+
+# 3. 屏蔽首页各种横幅和金刚位 (Banner/Kongo)
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_HOME_(OWNER_BANNER|PROSPECTS_BANNER|CUSTOM_BANNER|KONGO|CUSTOM_KONGO) jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=首页清爽化
+
+# 4. 屏蔽搜索提示及权益卡片
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/search\/firstPage\/getPromptList\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=搜索屏蔽
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/benefits\/benefitsCard\/getInfo\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=权益屏蔽
+
+# 5. 屏蔽推荐流、主题列表、活动广场等动态配置
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(customize\/getCustomizePageName|recommend\/getRecommendInfoFlows|activity\/getSquareActivityList|theme\/getThemeList|post\/getPostsByTags|evaluate\/getEvaluateCards)\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=内容流清理
+
+# 6. 屏蔽收藏记录列表
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(collection\/getCollectionList)\/v1\?.* jsonjq-response-body '.data = {} | .returnStatus = "SUCCEED"' tag=收藏清理
