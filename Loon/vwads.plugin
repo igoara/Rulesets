@@ -1,9 +1,20 @@
-# > 一汽大众
+#!name=一汽大众去广告
+#!desc=屏蔽一汽大众开屏广告及首页推广
+#!author=Custom
+#!icon=https://raw.githubusercontent.com/luestr/IconHub/master/App/FawVw.png
+
+[MITM]
 hostname = oneapp-api.faw-vw.com
-^https?:\/\/oneapp-api\.faw-vw\.com\/search\/firstPage\/getPromptList\/v1\?.* url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/benefits\/benefitsCard\/getInfo\/v1\?.* url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_HOME_BUOY url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_(OPEN_SCREEN_ADS|CAR_ZHIHU_COLLEGE) url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_HOME_(OWNER_BANNER|PROSPECTS_BANNER|CUSTOM_BANNER|KONGO|CUSTOM_KONGO) url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(customize\/getCustomizePageName|recommend\/getRecommendInfoFlows|activity\/getSquareActivityList|theme\/getThemeList|post\/getPostsByTags|evaluate\/getEvaluateCards)\/v1\?.* url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: [] }'
-^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(collection\/getCollectionList)\/v1\?.* url jsonjq-response-body '. = { returnStatus: "SUCCEED", hasMore: false, data: {} }'
+
+[Script]
+# 开屏广告
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_(OPEN_SCREEN_ADS|CAR_ZHIHU_COLLEGE) script-path=https://raw.githubusercontent.com/Loon0x00/LoonExampleConfig/master/Scripts/fix-body.js, requires-body=true, tag=屏蔽开屏广告, argument='.data.list = []'
+
+# 首页浮窗
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_HOME_BUOY script-path=https://raw.githubusercontent.com/Loon0x00/LoonExampleConfig/master/Scripts/fix-body.js, requires-body=true, tag=屏蔽首页浮窗, argument='.data.list = []'
+
+# 首页横幅及金刚位
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_HOME_(OWNER_BANNER|PROSPECTS_BANNER|CUSTOM_BANNER|KONGO|CUSTOM_KONGO) script-path=https://raw.githubusercontent.com/Loon0x00/LoonExampleConfig/master/Scripts/fix-body.js, requires-body=true, tag=首页清理, argument='.data.list = []'
+
+# 内容配置清理
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(customize\/getCustomizePageName|recommend\/getRecommendInfoFlows|activity\/getSquareActivityList|theme\/getThemeList|post\/getPostsByTags|evaluate\/getEvaluateCards)\/v1\?.* script-path=https://raw.githubusercontent.com/Loon0x00/LoonExampleConfig/master/Scripts/fix-body.js, requires-body=true, tag=内容清理, argument='.data = []'
