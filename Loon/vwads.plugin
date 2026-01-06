@@ -1,5 +1,5 @@
-#!name=一汽大众去广告精准版
-#!desc=屏蔽开屏广告及首页推广，无需下载外部脚本，直接本地解析。
+#!name=一汽大众去广告原生版
+#!desc=参考喜马拉雅语法，使用纯内置JQ处理，无需下载外部脚本。
 #!author=Custom
 #!icon=https://raw.githubusercontent.com/luestr/IconHub/master/App/FawVw.png
 
@@ -7,17 +7,14 @@
 hostname = oneapp-api.faw-vw.com
 
 [Script]
-# 屏蔽开屏广告
+# 开屏广告 - 强制清空数据列表并返回成功状态
 http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_(OPEN_SCREEN_ADS|CAR_ZHIHU_COLLEGE) jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=开屏屏蔽
 
-# 屏蔽首页浮窗
+# 首页浮窗屏蔽
 http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_HOME_BUOY jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=浮窗屏蔽
 
-# 屏蔽首页横幅及金刚位
-http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_HOME_(OWNER_BANNER|PROSPECTS_BANNER|CUSTOM_BANNER|KONGO|CUSTOM_KONGO) jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=首页清理
+# 首页Banner与金刚位屏蔽
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/booth\/getBoothList\/v1\?.*showPositionCode=VWAPP_(ICE|MEB)_HOME_(OWNER_BANNER|PROSPECTS_BANNER|CUSTOM_BANNER|KONGO|CUSTOM_KONGO) jsonjq-response-body '.data.list = [] | .returnStatus = "SUCCEED"' tag=首页清爽
 
-# 屏蔽搜索提示
-http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/search\/firstPage\/getPromptList\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=搜索屏蔽
-
-# 屏蔽其他内容配置
-http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(customize\/getCustomizePageName|recommend\/getRecommendInfoFlows|activity\/getSquareActivityList|theme\/getThemeList|post\/getPostsByTags|evaluate\/getEvaluateCards)\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=内容清理
+# 内容流清空 (广场、动态、推荐等)
+http-response ^https?:\/\/oneapp-api\.faw-vw\.com\/content\/(customize\/getCustomizePageName|recommend\/getRecommendInfoFlows|activity\/getSquareActivityList|theme\/getThemeList|post\/getPostsByTags|evaluate\/getEvaluateCards)\/v1\?.* jsonjq-response-body '.data = [] | .returnStatus = "SUCCEED"' tag=内容清空
